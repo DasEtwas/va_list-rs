@@ -11,7 +11,7 @@ extern crate libc;
 ///
 /// ## Example
 ///
-/// ```ignore
+/// ```rust
 /// unsafe {
 ///     to_va_list!(|v: va_list::va_list| {
 ///         vprintf(b"%d %d %s %f\n\0".as_ptr() as *const c_char, v);
@@ -32,7 +32,7 @@ macro_rules! to_va_list {
         should_be_in_unsafe_block();
 
         unsafe extern "C" fn call_func(f: *mut libc::c_void, ap: $crate::va_list) {
-            let f: &Box<Fn($crate::va_list) + 'static> = std::mem::transmute(f);
+            let f: &Box<dyn Fn($crate::va_list) + 'static> = std::mem::transmute(f);
             f(ap);
         }
 
@@ -49,7 +49,7 @@ macro_rules! to_va_list {
         should_be_in_unsafe_block();
 
         unsafe extern "C" fn call_func(f: *mut libc::c_void, ap: $crate::va_list) {
-            let f: &Box<Fn($crate::va_list) + 'static> = std::mem::transmute(f);
+            let f: &Box<dyn Fn($crate::va_list) + 'static> = std::mem::transmute(f);
             f(ap);
         }
 
@@ -61,7 +61,6 @@ macro_rules! to_va_list {
         $crate::create_va_list(Box::into_raw(Box::new(wrap)));
     }}
 }
-
 
 #[repr(C)]
 #[doc(hidden)]
@@ -78,7 +77,7 @@ extern "C" {
 
 #[doc(hidden)]
 pub fn convert_closure<F: Fn(va_list) + 'static>(f: F) -> *mut libc::c_void {
-    let f: Box<Box<Fn(va_list) + 'static>> = Box::new(Box::new(f));
+    let f: Box<Box<dyn Fn(va_list) + 'static>> = Box::new(Box::new(f));
     Box::into_raw(f) as *mut _
 }
 

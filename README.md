@@ -6,7 +6,7 @@ A way to use C `va_list` in Rust.
 
 ```Rust
 extern crate libc;
-#[macro_use] extern crate va_list;
+use va_list::*;
 
 use libc::{c_char, c_int};
 

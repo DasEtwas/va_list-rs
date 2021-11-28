@@ -1,5 +1,3 @@
-extern crate gcc;
-
 fn main() {
-    gcc::compile_library("libva_list.a", &["ffi/va_list.c"])
+    cc::Build::new().file("ffi/va_list.c").compile("va_list");
 }
